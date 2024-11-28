@@ -5,6 +5,7 @@ import lombok.Data;
 
 @Entity
 @Data
+//
 public class ChatMessageSend {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
