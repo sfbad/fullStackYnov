@@ -1,13 +1,13 @@
-package com.ynov.ynovai;
+package com.ynov.fullStackAIYnov;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class YnovAiApplicationTests {
+class FullStackAiYnovApplicationTests {
 
-    @Test
-    void contextLoads() {
-    }
+	@Test
+	void contextLoads() {
+	}
 
 }
