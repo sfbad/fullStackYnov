@@ -9,14 +9,14 @@ public class Parameters {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="id", nullable = false)
+    @Column( nullable = false)
     private long id;
 
     private String nomParam;
     private String TypeParam;
 
     @ManyToOne
-    @JoinColumn(name="user_id")
-    private PromptModel promptModel;
+    @JoinColumn( nullable = false)
+    private PromptModel modelPrompted;
 
 }

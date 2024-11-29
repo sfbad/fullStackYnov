@@ -1,4 +1,7 @@
 package com.ynov.fullStackAIYnov.dto;
 
-public class ParametersDTO {
+public record ParametersDTO (String nomParam,
+                             String typeParam,
+                             Long promptModelId)
+{
 }

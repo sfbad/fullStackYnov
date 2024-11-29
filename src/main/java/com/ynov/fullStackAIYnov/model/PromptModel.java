@@ -12,15 +12,17 @@ import java.util.List;
 public class PromptModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="id", nullable = false)
+    private Long id;
 
-    private long id;
+    @Lob
+    @Column( columnDefinition = "TEXT")
     private String description;
-    public PromptModel(String promptText) {
-        this.description = fil
-    }
 
-    private String filepath;
+    @Column(nullable = false)
+    private String filepath = "prompts/Testprompt.txt";
+    public PromptModel(String filepath) {
+        this.filepath = filepath;
+    }
 
 
 }

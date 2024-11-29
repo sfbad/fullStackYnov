@@ -1,4 +1,9 @@
 package com.ynov.fullStackAIYnov.dto;
 
-public class PromptModelDTO {
+import lombok.Builder;
+
+import java.sql.Clob;
+
+@Builder
+public record PromptModelDTO(String description, String filepath) {
 }

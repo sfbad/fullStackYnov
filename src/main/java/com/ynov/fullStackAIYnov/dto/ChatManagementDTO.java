@@ -1,4 +1,6 @@
 package com.ynov.fullStackAIYnov.dto;
 
-public class ChatManagementDTO {
+public record ChatManagementDTO (String prompt,
+                                 String question,
+                                 String response ){
 }
