@@ -13,10 +13,12 @@ public class User {
     @Column(name="id", nullable = false)
     private long id;
 
-    @Lob
-    @Column(name="response", columnDefinition = "CLOB")
-    private String response;
 
-    @OneToOne
-    ChatMessageSend chatMessageSend;
+    private String nom;
+    private String prenom;
+    private String email;
+
+
+
+
 }
