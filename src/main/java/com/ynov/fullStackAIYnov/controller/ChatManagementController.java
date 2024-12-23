@@ -9,6 +9,8 @@ import com.ynov.fullStackAIYnov.repository.ChatManagementRepository;
 import com.ynov.fullStackAIYnov.service.DiscussionService;
 import com.ynov.fullStackAIYnov.service.PromptModelService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.ai.ollama.OllamaChatModel;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,6 +37,8 @@ public class ChatManagementController {
         }
         return ResponseEntity.ok(null);
     }
+
+
 
     @PostMapping("/{promptId}/ask")
     public ResponseEntity<String> askQuestion(@PathVariable Long promptId, @RequestBody QuestionDTO questionDTO) {

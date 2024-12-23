@@ -40,6 +40,7 @@ public class DiscussionService {
         }
 
         String iaResponse = sendToAI(promptDescription, userQuestion);
+        System.out.println(iaResponse);
 
         ChatManagement chatManagement = new ChatManagement();
         chatManagement.setPrompt(promptDescription);
