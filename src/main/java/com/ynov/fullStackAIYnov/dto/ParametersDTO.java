@@ -1,7 +1,14 @@
 package com.ynov.fullStackAIYnov.dto;
 
-public record ParametersDTO (String nomParam,
-                             String typeParam,
-                             Long promptModelId)
+import javax.validation.constraints.NotNull;
+import java.util.List;
+
+public record ParameterDTO(@NotNull(message = "Le nom est obligatoire")
+                             String nomPersonnage,
+                           @NotNull(message = "Au moins un trait de personalité doit etre renseigné")
+                             List<String> traitsPersonnalite,
+                           String description
+                             )
 {
+
 }
