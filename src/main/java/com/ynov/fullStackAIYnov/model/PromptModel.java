@@ -17,4 +17,8 @@ public class PromptModel {
     @Column(columnDefinition = "TEXT")
     private String description;
     private String imgUrl ;
+
+
 }
+
+

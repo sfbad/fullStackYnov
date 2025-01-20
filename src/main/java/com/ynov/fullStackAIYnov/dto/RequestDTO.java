@@ -32,4 +32,6 @@ public record RequestDTO(@NotNull List<PersonnageDTO> personnageDTOS,
 
         return tramHistoireWithDetails;
     }
+
 }
+

@@ -13,4 +13,7 @@ public record PromptModelDTO(
         String description,
         @NotNull
         String imgUrl) {
+
+
 }
+
