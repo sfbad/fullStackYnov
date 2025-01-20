@@ -3,7 +3,7 @@ package com.ynov.fullStackAIYnov.dto;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
-public record RequestDTO(@NotNull List<ParameterDTO> parameterDTOS,
+public record RequestDTO(@NotNull List<PersonnageDTO> personnageDTOS,
                          @NotNull(message = " Veuillez remplir le trame de l'histoire")
                          String tramHistoire
                             ) {
@@ -16,13 +16,13 @@ public record RequestDTO(@NotNull List<ParameterDTO> parameterDTOS,
                 .append(tramHistoire).append("\n\n")
                 .append("Les personnages sont les suivants :\n");
 
-        parameterDTOS.forEach(parameterDTO -> {
+        personnageDTOS.forEach(personnageDTO -> {
 
-            String description = parameterDTO.description();
+            String description = personnageDTO.description();
 
             tramHistoireWithDetails.append("Le personnage \"")
-                    .append(parameterDTO.nomPersonnage()).append("\" a les traits de personnalité suivants : ")
-                    .append(String.join(", ", parameterDTO.traitsPersonnalite()));
+                    .append(personnageDTO.nomPersonnage()).append("\" a les traits de personnalité suivants : ")
+                    .append(String.join(", ", personnageDTO.traitsPersonnalite()));
             if (description != null) {
                 tramHistoireWithDetails.append(". Description : ").append(description);
             }

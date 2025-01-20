@@ -1,11 +1,12 @@
 package com.ynov.fullStackAIYnov.service;
 
-import com.ynov.fullStackAIYnov.dto.ParameterDTO;
+import com.ynov.fullStackAIYnov.dto.PersonnageDTO;
 import com.ynov.fullStackAIYnov.dto.RequestDTO;
-import com.ynov.fullStackAIYnov.model.HistoriqueInteraction;
-import com.ynov.fullStackAIYnov.model.Parameters;
-import com.ynov.fullStackAIYnov.repository.HistoriqueInteractionRepository;
+import com.ynov.fullStackAIYnov.model.Personnage;
+import com.ynov.fullStackAIYnov.model.Scenario;
+import com.ynov.fullStackAIYnov.repository.ScenarioRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.SystemMessage;
 import org.springframework.ai.chat.messages.UserMessage;
@@ -19,7 +20,6 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -31,19 +31,20 @@ import java.util.stream.Collectors;
  * <p>Méthodes :
  * 1. processInteraction(Long promptModelId, RequestDTO requestDTO) - Traite une interaction utilisateur avec l'IA.
  * 2. sendToAI(String promptDescription, StringBuilder userQuestion) - Envoie la question de l'utilisateur à l'IA et récupère la réponse.
- * 3. saveParameters(List<ParameterDTO> parameterDTOS, Long promptModelId) - Sauvegarde ou met à jour les paramètres associés à un modèle de prompt.
+ * 3. saveParameters(List<PersonnageDTO> personnageDTOS, Long promptModelId) - Sauvegarde ou met à jour les paramètres associés à un modèle de prompt.
  * 4. getHistoriqueInteractions() - Récupère l'historique de toutes les interactions.
  * 5. getHistoriqueByPromptModel(Long promptModelId) - Récupère l'historique des interactions pour un modèle de prompt spécifique.
  * </p>
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class DiscussionService {
 
     private final OllamaChatModel ollamaChatModel;
     private final PromptModelService promptModelService;
-    private final HistoriqueInteractionRepository historiqueInteractionRepository;
-    private final ParametersService parametersService;
+    private final ScenarioRepository scenarioRepository;
+    private final PersonnageService personnageService;
 
     /**
      * Traite une interaction utilisateur avec l'IA.
@@ -56,28 +57,47 @@ public class DiscussionService {
      * @throws IOException Si une erreur se produit lors de l'envoi de la requête à l'IA.
      */
     public String processInteraction(Long promptModelId, RequestDTO requestDTO) throws SQLException, IOException {
+
         StringBuilder requestScenario = requestDTO.getTramHistoireWithDetails();
 
         if (promptModelId == null || requestScenario.isEmpty()) {
-            throw new IllegalArgumentException("PromptModel ID ou question utilisateur invalide.");
+            throw new IllegalArgumentException("Prompt ID ou question utilisateur invalide.");
         }
 
-        String promptDescription = promptModelService.loadPromptDescription(promptModelId).getDescription();
+        String promptDescription = promptModelService.getPromptModelById(promptModelId).getDescription();
 
         if (promptDescription == null || promptDescription.isEmpty()) {
             throw new IllegalArgumentException("La description du prompt est vide ou non trouvée.");
         }
-        saveParameters(requestDTO.parameterDTOS(), promptModelId);
+
+        log.info("Envoie de la tram à OLLAMA debut ");
 
         String iaResponse = sendToAI(promptDescription, requestScenario);
-        System.out.println(iaResponse);
+        log.info("Début persistance du scenario : ");
 
-        // Enregistrement de l'historique de l'interaction
-        HistoriqueInteraction historiqueInteraction = new HistoriqueInteraction();
-        historiqueInteraction.setPrompt(promptDescription);
-        historiqueInteraction.setQuestion(requestScenario);
-        historiqueInteraction.setResponse(iaResponse);
-        historiqueInteractionRepository.save(historiqueInteraction);
+        Scenario scenario = new Scenario();
+        scenario.setPrompt(promptDescription);
+        scenario.setTramHistoire(requestDTO.tramHistoire());
+        scenario.setResponse(iaResponse);
+        log.info("Fin persistance du scenario : " + scenario);
+
+        scenarioRepository.save(scenario);
+        List<PersonnageDTO> personnageDTOS = requestDTO.personnageDTOS();
+        log.info("Envoie de la tram à OLLAMA fin  ");
+
+
+        log.info("debut persistance des personnages : " + personnageDTOS);
+        personnageDTOS.forEach(personnageDTO -> {
+            Personnage personnage = Personnage.builder()
+                    .nomPersonnage(personnageDTO.nomPersonnage())
+                    .traitsPersonnalite(personnageDTO.traitsPersonnalite())
+                    .description(personnageDTO.description())
+                    .build();
+            personnage.setScenario(scenario);
+            personnageService.save(personnage);
+        });
+        log.info("Persistance des personnages fin ");
+
 
         return iaResponse;
     }
@@ -86,25 +106,23 @@ public class DiscussionService {
      * Envoie une question utilisateur à l'IA et récupère la réponse.
      *
      * @param promptDescription La description du prompt à envoyer à l'IA.
-     * @param userQuestion La question de l'utilisateur à envoyer.
+     * @param userQuestion La question ou le tram + les personnages de l'utilisateur à envoyer.
      * @return La réponse de l'IA sous forme de chaîne de caractères.
      * @throws IOException Si une erreur se produit lors de l'envoi de la requête à l'IA.
      */
     private String sendToAI(String promptDescription, StringBuilder userQuestion) {
         try {
             List<Message> messages = new ArrayList<>();
-            messages.add(new SystemMessage(promptDescription));  // Ajout du prompt système
-            System.out.println("la question " + userQuestion);
-            messages.add(new UserMessage(String.valueOf(userQuestion)));  // Ajout du message utilisateur
+            messages.add(new SystemMessage(promptDescription));
+            messages.add(new UserMessage(String.valueOf(userQuestion)));
 
-            Prompt promptToSend = new Prompt(messages);  // Création de la requête
+            Prompt promptToSend = new Prompt(messages);
             Flux<ChatResponse> chatResponses = ollamaChatModel.stream(promptToSend);
 
-            // Collecte des réponses de l'IA
             return Optional.ofNullable(chatResponses.collectList().block())
                     .orElseThrow(() -> new IOException("Aucune réponse reçue de la part de Ollama."))
                     .stream()
-                    .map(response -> response.getResult().getOutput().getContent())  // Extraction du contenu de la réponse
+                    .map(response -> response.getResult().getOutput().getContent())
                     .collect(Collectors.joining(""));
         } catch (Exception e) {
             throw new RuntimeException("Erreur lors de l'interaction avec Ollama : " + e.getMessage(), e);
@@ -112,60 +130,20 @@ public class DiscussionService {
     }
 
     /**
-     * Sauvegarde ou met à jour les paramètres associés à un modèle de prompt.
-     * Si le paramètre existe déjà, il est mis à jour ; sinon, un nouveau paramètre est créé.
-     *
-     * @param parameterDTOS La liste des paramètres à sauvegarder ou mettre à jour.
-     * @param promptModelId L'ID du modèle de prompt auquel les paramètres sont associés.
-     * @return `true` si l'opération est réussie.
+     * @return La liste de tous les scenarios .
      */
-    public boolean saveParameters(List<ParameterDTO> parameterDTOS, Long promptModelId) {
-        parameterDTOS.forEach(parameterDTO -> {
-            Parameters existingParam = parametersService.findByNomPersonnage(parameterDTO.nomPersonnage());
-
-            if (existingParam != null && Objects.equals(existingParam.getModelPrompted().getId(), promptModelId)) {
-                existingParam.setTraitsPersonnalite(parameterDTO.traitsPersonnalite());
-                existingParam.setDescription(parameterDTO.description());
-                parametersService.save(existingParam);
-            } else {
-                Parameters param = new Parameters();
-                param.setNomPersonnage(parameterDTO.nomPersonnage());
-                param.setTraitsPersonnalite(parameterDTO.traitsPersonnalite());
-                param.setDescription(parameterDTO.description());
-
-                try {
-                    param.setModelPrompted(promptModelService.loadPromptDescription(promptModelId));  // Associe le modèle de prompt
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-                parametersService.save(param);
-            }
-        });
-        return true;
+    public List<Scenario> getHistoriqueScenario() {
+        return scenarioRepository.findAll();
     }
 
     /**
-     * Récupère l'historique de toutes les interactions.
-     *
-     * @return La liste de toutes les interactions enregistrées dans l'historique.
-     */
-    public List<HistoriqueInteraction> getHistoriqueInteractions() {
-        return historiqueInteractionRepository.findAll();
-    }
-
-    /**
-     * Récupère l'historique des interactions pour un modèle de prompt spécifique.
+     * Récupère l'historique des scénarios pour un modèle de prompt spécifique.
      *
      * @param promptModelId L'ID du modèle de prompt.
      * @return La liste des interactions associées au modèle de prompt.
      */
-    public List<HistoriqueInteraction> getHistoriqueByPromptModel(Long promptModelId) {
-        return historiqueInteractionRepository.findByModelPrompted_Id(promptModelId);
+    public List<Scenario> getScenarioByPromptModel(Long promptModelId) {
+        return scenarioRepository.findByModelPrompted_Id(promptModelId);
     }
-    /*
-     *j'essaye de forcer le push tkt
-     *
-     *
-     *
-     */
+
 }

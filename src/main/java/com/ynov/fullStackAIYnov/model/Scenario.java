@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @Entity
-public class HistoriqueInteraction {
+public class Scenario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -15,11 +15,12 @@ public class HistoriqueInteraction {
     private String prompt;
 
     @Column(columnDefinition = "TEXT")
-    private StringBuilder question;
+    private String tramHistoire;
 
     @Column(columnDefinition = "TEXT")
     private String response;
     @ManyToOne
     @JoinColumn(name = "prompt_model_id")
     private PromptModel modelPrompted;
+    
 }
