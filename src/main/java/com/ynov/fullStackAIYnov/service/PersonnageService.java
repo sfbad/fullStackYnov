@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Service pour la gestion des paramètres associés aux modèles de prompt et aux interactions.
@@ -78,7 +79,7 @@ public class PersonnageService {
                 .orElseThrow(() -> new IllegalArgumentException("Paramètre introuvable"));
         personnageRepository.delete(existingParameter);
     }
-
-
-
+    public Optional<Personnage> getPersonnageById(Long parameterId) {
+        return personnageRepository.findById(parameterId);
+    }
 }

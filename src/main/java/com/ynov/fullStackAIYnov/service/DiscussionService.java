@@ -129,21 +129,5 @@ public class DiscussionService {
         }
     }
 
-    /**
-     * @return La liste de tous les scenarios .
-     */
-    public List<Scenario> getHistoriqueScenario() {
-        return scenarioRepository.findAll();
-    }
-
-    /**
-     * Récupère l'historique des scénarios pour un modèle de prompt spécifique.
-     *
-     * @param promptModelId L'ID du modèle de prompt.
-     * @return La liste des interactions associées au modèle de prompt.
-     */
-    public List<Scenario> getScenarioByPromptModel(Long promptModelId) {
-        return scenarioRepository.findByModelPrompted_Id(promptModelId);
-    }
 
 }

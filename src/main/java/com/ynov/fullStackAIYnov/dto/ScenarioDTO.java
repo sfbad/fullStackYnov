@@ -5,7 +5,7 @@ import lombok.Builder;
 import java.util.Locale;
 
 @Builder
-public record ScenarioDTO(String prompt, String tramHistoire, String response) {
+public record ScenarioDTO(Long id,String prompt, String tramHistoire, String response) {
 
 }
 
