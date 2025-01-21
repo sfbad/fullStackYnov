@@ -92,6 +92,9 @@ public class PromptModelService {
         return modelPromptRepository.existsById(id);
     }
 
+    public PromptModel savePromptModel(PromptModel promptModel) {
+        return modelPromptRepository.save(promptModel);
+    }
 }
 
 

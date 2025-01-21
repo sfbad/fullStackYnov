@@ -10,7 +10,6 @@ import com.ynov.fullStackAIYnov.service.PromptModelService;
 import com.ynov.fullStackAIYnov.service.ScenarioService;
 import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.misc.Pair;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,7 +18,6 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/chat")
@@ -29,16 +27,15 @@ public class ChatManagementController {
     private final DiscussionService discussionService;
     private final PersonnageService personnageService;
     private final PromptModelService promptModelService;
-    @Autowired
     private final ScenarioService scenarioService;
 
 
     @PostMapping("/{promptId}/ask")
-    public ResponseEntity<String> request(@PathVariable Long promptId, @RequestBody RequestDTO requestDTO) {
+    public ResponseEntity<String> request(@RequestBody Long promptmodel_Id, @RequestBody RequestDTO requestDTO) {
         try {
-            promptModelService.getPromptModelById(promptId);
+            promptModelService.getPromptModelById(promptmodel_Id);
 
-            String response = discussionService.processInteraction(promptId, requestDTO);
+            String response = discussionService.processInteraction(promptmodel_Id, requestDTO);
             return ResponseEntity.ok(response);
 
         } catch (IOException | IllegalArgumentException e) {
@@ -47,7 +44,7 @@ public class ChatManagementController {
             throw new RuntimeException(e);
         }
     }
-    @PostMapping("/prompt/creer")
+    @PostMapping("/promptcreate")
     public ResponseEntity<List<PromptModelDTO>> createPromptModel(@Valid @RequestBody PromptModelDTO promptModelDTO) {
         try {
             List<PromptModelDTO> promptModelDTOList = new ArrayList<>();
@@ -68,6 +65,19 @@ public class ChatManagementController {
             return ResponseEntity.status(500).body(null);
         }
     }
+    @PutMapping("/update/{id}")
+    public ResponseEntity<String> updatePromptModel(@PathVariable Long id, @RequestBody PromptModelDTO promptModelDTO) {
+        if(!promptModelService.existsPromptModelById(id)){
+            return ResponseEntity.status(404).body("Prompt model not found");
+        }
+        PromptModel promptModel = promptModelService.getPromptModelById(id);
+        promptModel.setTitre(promptModelDTO.titre());
+        promptModel.setDescription(promptModelDTO.description());
+        promptModel.setImgUrl(promptModelDTO.imgUrl());
+        promptModelService.savePromptModel(promptModel);
+        return ResponseEntity.ok("Prompt model updated !!!");
+
+    }
     @GetMapping("/model/{id}")
     public ResponseEntity<PromptModelDTO> getPromptById(@PathVariable Long id) {
         PromptModel promptModel = promptModelService.getPromptModelById(id);
@@ -76,6 +86,21 @@ public class ChatManagementController {
                         .description(promptModel.getDescription())
                          .imgUrl(promptModel.getImgUrl())
                         .build());
+    }
+    @GetMapping("/promptmodels")
+    public ResponseEntity<List<PromptModelDTO>> getAllPromptModels() {
+        List<PromptModelDTO> promptModelDTOList = new ArrayList<>();
+        promptModelService.getAllPromptModels().forEach(promptModel -> {
+            PromptModelDTO personnageDTO =PromptModelDTO.builder()
+                            .id(promptModel.getId())
+                                    .titre(promptModel.getTitre())
+                                            .description(promptModel.getDescription())
+                                                .imgUrl(promptModel.getImgUrl())
+                                                     .build();
+
+            promptModelDTOList.add(personnageDTO);
+        });
+        return ResponseEntity.ok(promptModelDTOList);
     }
     @GetMapping("/historique/{promptModelId}")
     public ResponseEntity<List<ScenarioDTO>> getHistoriqueByPromptModel(@PathVariable Long promptModelId) {
@@ -91,19 +116,16 @@ public class ChatManagementController {
         });
         return ResponseEntity.ok(scenarioDTOS);
     }
-
-    @GetMapping("/scenario_titre_tram")
-    public List<ScenarioByTitreAndTramDTO> getScenarioByTitreAndTramHistoire(){
-        return scenarioService.findByTitreAndByTrameHistoire();
+    @GetMapping("/scenarioList")
+    public List<ScenarioByIDAndTitre> getScenarioByTitreAndTramHistoire(){
+        return scenarioService.findByIdAndTitre();
     }
-
-
+    @GetMapping("/")
     @DeleteMapping("/delete/scenario")
     public ResponseEntity<String> deleteScenario(@RequestParam Long scenarioID) {
         scenarioService.deleteById(scenarioID);
         return ResponseEntity.ok("Scenario deleted");
     }
-
     @GetMapping("/personnages")
     public ResponseEntity<List<PersonnageDTO>> getPersonnages(@RequestParam Long scenarioID) {
         List<PersonnageDTO> personnageDTOS = getPersonnageDTOS(scenarioID);
@@ -115,11 +137,19 @@ public class ChatManagementController {
         return ResponseEntity.ok("Personnage deleted");
     }
 
-    @GetMapping("/getScenario")
-    public ResponseEntity< Pair<ScenarioDTO,List<PersonnageDTO> >> getScenarioById(@RequestParam Long scenarioID) {
+    @DeleteMapping("/delete")
+    public ResponseEntity<String> deletePromptModel(@RequestBody Long id) {
+        promptModelService.deletePromptModel(id);
+        return ResponseEntity.ok("Prompt model deleted");
+    }
+    
+    @GetMapping("/scenarioDetail/{scenarioID}")
+    public ResponseEntity< Pair<ScenarioDTO,List<PersonnageDTO> >> getScenarioById(@PathVariable Long scenarioID) {
         Scenario scenario = scenarioService.findById(scenarioID);
         ScenarioDTO scenarioDTO = ScenarioDTO.builder()
+
                 .id(scenario.getId())
+                .titre(scenario.getTitre())
                 .prompt(scenario.getPrompt())
                 .tramHistoire(scenario.getTramHistoire())
                 .response(scenario.getResponse())
@@ -129,8 +159,7 @@ public class ChatManagementController {
         return ResponseEntity.ok(new Pair<>(scenarioDTO, personnageDTOS));
     }
 
-
-
+    //Methode utilitaire
     private List<PersonnageDTO> getPersonnageDTOS(Long scenarioID) {
         List<Personnage> personnages = personnageService.getPersonnagesByScenarioID(scenarioID);
         List<PersonnageDTO> personnageDTOS = new ArrayList<>();

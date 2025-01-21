@@ -76,10 +76,11 @@ public class DiscussionService {
         log.info("Début persistance du scenario : ");
 
         Scenario scenario = new Scenario();
+        scenario.setTitre(requestDTO.titre());
         scenario.setPrompt(promptDescription);
         scenario.setTramHistoire(requestDTO.tramHistoire());
         scenario.setResponse(iaResponse);
-        log.info("Fin persistance du scenario : " + scenario);
+        log.info("Fin persistance du scenario");
 
         scenarioRepository.save(scenario);
         List<PersonnageDTO> personnageDTOS = requestDTO.personnageDTOS();
@@ -112,11 +113,13 @@ public class DiscussionService {
      */
     private String sendToAI(String promptDescription, StringBuilder userQuestion) {
         try {
+
             List<Message> messages = new ArrayList<>();
             messages.add(new SystemMessage(promptDescription));
             messages.add(new UserMessage(String.valueOf(userQuestion)));
-
             Prompt promptToSend = new Prompt(messages);
+
+
             Flux<ChatResponse> chatResponses = ollamaChatModel.stream(promptToSend);
 
             return Optional.ofNullable(chatResponses.collectList().block())

@@ -4,8 +4,10 @@ import javax.validation.constraints.NotNull;
 import java.util.List;
 
 public record RequestDTO(@NotNull List<PersonnageDTO> personnageDTOS,
+
                          @NotNull(message = " Veuillez remplir le trame de l'histoire")
-                         String tramHistoire
+                         String tramHistoire,
+                         String titre
                             ) {
 
     public StringBuilder getTramHistoireWithDetails() {
