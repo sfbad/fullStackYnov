@@ -30,7 +30,7 @@ public class ChatManagementController {
     private final ScenarioService scenarioService;
 
 
-    @PostMapping("/{promptId}/ask")
+    @PostMapping("/{promptId}/scenariogenerate")
     public ResponseEntity<String> request(@RequestBody Long promptmodel_Id, @RequestBody RequestDTO requestDTO) {
         try {
             promptModelService.getPromptModelById(promptmodel_Id);
@@ -53,12 +53,12 @@ public class ChatManagementController {
             );
             promptModelService.getAllPromptModels().forEach(promptModel1 -> {
                 PromptModelDTO promptModelDTO1 = PromptModelDTO.builder()
-                                .titre(promptModel1.getTitre())
-                                        .description(promptModel1.getDescription())
-                                                .imgUrl(promptModel1.getImgUrl())
+                        .titre(promptModel1.getTitre())
+                        .description(promptModel1.getDescription())
+                        .imgUrl(promptModel1.getImgUrl())
                         .build();
                 promptModelDTOList.add(promptModelDTO1);
-                    });
+            });
             return ResponseEntity.ok(promptModelDTOList);
 
         } catch (Exception e) {
@@ -82,21 +82,21 @@ public class ChatManagementController {
     public ResponseEntity<PromptModelDTO> getPromptById(@PathVariable Long id) {
         PromptModel promptModel = promptModelService.getPromptModelById(id);
         return ResponseEntity.ok(PromptModelDTO.builder()
-                        .titre(promptModel.getTitre())
-                        .description(promptModel.getDescription())
-                         .imgUrl(promptModel.getImgUrl())
-                        .build());
+                .titre(promptModel.getTitre())
+                .description(promptModel.getDescription())
+                .imgUrl(promptModel.getImgUrl())
+                .build());
     }
     @GetMapping("/promptmodels")
     public ResponseEntity<List<PromptModelDTO>> getAllPromptModels() {
         List<PromptModelDTO> promptModelDTOList = new ArrayList<>();
         promptModelService.getAllPromptModels().forEach(promptModel -> {
             PromptModelDTO personnageDTO =PromptModelDTO.builder()
-                            .id(promptModel.getId())
-                                    .titre(promptModel.getTitre())
-                                            .description(promptModel.getDescription())
-                                                .imgUrl(promptModel.getImgUrl())
-                                                     .build();
+                    .id(promptModel.getId())
+                    .titre(promptModel.getTitre())
+                    .description(promptModel.getDescription())
+                    .imgUrl(promptModel.getImgUrl())
+                    .build();
 
             promptModelDTOList.add(personnageDTO);
         });
@@ -120,7 +120,7 @@ public class ChatManagementController {
     public List<ScenarioByIDAndTitre> getScenarioByTitreAndTramHistoire(){
         return scenarioService.findByIdAndTitre();
     }
-    @GetMapping("/")
+
     @DeleteMapping("/delete/scenario")
     public ResponseEntity<String> deleteScenario(@RequestParam Long scenarioID) {
         scenarioService.deleteById(scenarioID);
@@ -142,7 +142,7 @@ public class ChatManagementController {
         promptModelService.deletePromptModel(id);
         return ResponseEntity.ok("Prompt model deleted");
     }
-    
+
     @GetMapping("/scenarioDetail/{scenarioID}")
     public ResponseEntity< Pair<ScenarioDTO,List<PersonnageDTO> >> getScenarioById(@PathVariable Long scenarioID) {
         Scenario scenario = scenarioService.findById(scenarioID);
