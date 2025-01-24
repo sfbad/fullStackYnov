@@ -138,8 +138,8 @@ public class ChatManagementController {
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<String> deletePromptModel(@RequestBody String id) {
-        promptModelService.deletePromptModel(Long.valueOf(id));
+    public ResponseEntity<String> deletePromptModel(@RequestBody PromptIdDTO promptIdDTO) {
+        promptModelService.deletePromptModel(promptIdDTO.id());
         return ResponseEntity.ok("Prompt model deleted");
     }
 

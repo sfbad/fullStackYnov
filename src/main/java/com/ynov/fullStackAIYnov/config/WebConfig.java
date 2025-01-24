@@ -1,4 +1,4 @@
-package com.ynov.fullStackAIYnov.controller;
+package com.ynov.fullStackAIYnov.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
