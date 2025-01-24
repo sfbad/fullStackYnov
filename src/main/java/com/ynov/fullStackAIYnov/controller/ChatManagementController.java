@@ -53,6 +53,7 @@ public class ChatManagementController {
             );
             promptModelService.getAllPromptModels().forEach(promptModel1 -> {
                 PromptModelDTO promptModelDTO1 = PromptModelDTO.builder()
+                        .id(promptModel1.getId())
                         .titre(promptModel1.getTitre())
                         .description(promptModel1.getDescription())
                         .imgUrl(promptModel1.getImgUrl())
