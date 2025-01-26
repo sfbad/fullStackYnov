@@ -31,11 +31,11 @@ public class ChatManagementController {
 
 
     @PostMapping("/{promptId}/scenariogenerate")
-    public ResponseEntity<String> request(@RequestBody Long promptmodel_Id, @RequestBody RequestDTO requestDTO) {
+    public ResponseEntity<String> request(@PathVariable Long promptId, @RequestBody RequestDTO requestDTO) {
         try {
-            promptModelService.getPromptModelById(promptmodel_Id);
+            promptModelService.getPromptModelById(promptId);
 
-            String response = discussionService.processInteraction(promptmodel_Id, requestDTO);
+            String response = discussionService.processInteraction(promptId, requestDTO);
             return ResponseEntity.ok(response);
 
         } catch (IOException | IllegalArgumentException e) {
