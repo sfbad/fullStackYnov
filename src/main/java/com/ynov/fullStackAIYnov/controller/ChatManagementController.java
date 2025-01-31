@@ -33,6 +33,7 @@ public class ChatManagementController {
     @PostMapping("/{promptId}/scenariogenerate")
     public ResponseEntity<String> request(@PathVariable Long promptId, @RequestBody RequestDTO requestDTO) {
         try {
+            System.out.println(requestDTO);
             promptModelService.getPromptModelById(promptId);
 
             String response = discussionService.processInteraction(promptId, requestDTO);
@@ -119,7 +120,14 @@ public class ChatManagementController {
     }
     @GetMapping("/scenarioList")
     public List<ScenarioByIDAndTitre> getScenarioByTitreAndTramHistoire(){
-        return scenarioService.findByIdAndTitre();
+        List<Scenario> scenarios = scenarioService.findAll();
+        List<ScenarioByIDAndTitre> scenarioByIDAndTitre = new ArrayList<>();
+        scenarios.forEach(scenario -> {
+            ScenarioByIDAndTitre scenarioByIDAndTitre1 = new ScenarioByIDAndTitre(scenario.getId(), scenario.getTitre());
+            scenarioByIDAndTitre.add(scenarioByIDAndTitre1);
+
+        });
+        return scenarioByIDAndTitre;
     }
 
     @DeleteMapping("/delete/scenario")
@@ -135,7 +143,8 @@ public class ChatManagementController {
     @DeleteMapping("/delete_personnage")
     public ResponseEntity<String> deletePersonnage(@RequestParam Long personnageID) {
         personnageService.deletePersonnage(personnageID);
-        return ResponseEntity.ok("Personnage deleted");
+        String message = "Personnage deleted !!!";
+        return ResponseEntity.ok(message);
     }
 
     @DeleteMapping("/delete")

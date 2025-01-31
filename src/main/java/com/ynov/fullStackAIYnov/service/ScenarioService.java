@@ -31,9 +31,7 @@ public class ScenarioService {
         return scenarioRepository.findByModelPrompted_Id(promptModelId);
 
     }
-    public List<ScenarioByIDAndTitre> findByIdAndTitre(){
-        return scenarioRepository.findByIdAndTitre();
-    }
+
     /**
      * Récupère l'historique des scénarios pour un modèle de prompt spécifique.
      *

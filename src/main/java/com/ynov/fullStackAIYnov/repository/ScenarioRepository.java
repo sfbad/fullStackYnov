@@ -11,8 +11,5 @@ import java.util.List;
 public interface ScenarioRepository extends JpaRepository<Scenario, Long> {
 
     List<Scenario> findByModelPrompted_Id(Long promptModelId);
-    @Query("SELECT s.id as id, s.titre AS titre FROM Scenario s")
-    List<ScenarioByIDAndTitre> findByIdAndTitre();
-
 
 }
