@@ -20,8 +20,9 @@ Avant de lancer l'application, assurez-vous d'avoir les éléments suivants :
 ##     CREATE DATABASE bandir;
 
 ######              Configuration
-    Allez dans le dossier src/main/resources de du projet et ouvrez le fichier 
+    Allez dans le dossier src/main/resources du projet et ouvrez le fichier 
       application.properties.
+    Assurez-vous que le fichier contient les informations suivantes pour la connexion à la base de données :
            spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver 
            spring.datasource.url=jdbc:mysql://localhost:3306/bandir
            spring.datasource.username=votre_nom_utilisateur_mysql
