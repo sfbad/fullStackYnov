@@ -22,10 +22,10 @@ Avant de lancer l'application, assurez-vous d'avoir les éléments suivants :
 ######              Configuration
     Allez dans le dossier src/main/resources de du projet et ouvrez le fichier 
       application.properties.
-##            spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
-##            spring.datasource.url=jdbc:mysql://localhost:3306/bandir
-##            spring.datasource.username=votre_nom_utilisateur_mysql
-##            spring.datasource.password=votre_mot_de_passe_mysql
+           spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver 
+           spring.datasource.url=jdbc:mysql://localhost:3306/bandir
+           spring.datasource.username=votre_nom_utilisateur_mysql
+           spring.datasource.password=votre_mot_de_passe_mysql
       Remplacez votre_nom_utilisateur_mysql et votre_mot_de_passe_mysql par vos informations d'identification MySQL.
 
 #####      Lancer l'application
