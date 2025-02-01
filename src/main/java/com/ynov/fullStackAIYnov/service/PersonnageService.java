@@ -79,7 +79,5 @@ public class PersonnageService {
                 .orElseThrow(() -> new IllegalArgumentException("Paramètre introuvable"));
         personnageRepository.delete(existingParameter);
     }
-    public Optional<Personnage> getPersonnageById(Long parameterId) {
-        return personnageRepository.findById(parameterId);
-    }
+
 }

@@ -89,6 +89,7 @@ public class ChatManagementController {
                 .imgUrl(promptModel.getImgUrl())
                 .build());
     }
+
     @GetMapping("/promptmodels")
     public ResponseEntity<List<PromptModelDTO>> getAllPromptModels() {
         List<PromptModelDTO> promptModelDTOList = new ArrayList<>();
@@ -104,20 +105,7 @@ public class ChatManagementController {
         });
         return ResponseEntity.ok(promptModelDTOList);
     }
-    @GetMapping("/historique/{promptModelId}")
-    public ResponseEntity<List<ScenarioDTO>> getHistoriqueByPromptModel(@PathVariable Long promptModelId) {
-        List<Scenario> scenarios = scenarioService.getScenarioByPromptModel(promptModelId);
-        List<ScenarioDTO> scenarioDTOS = new ArrayList<>();
-        scenarios.forEach(scenario -> {
-            ScenarioDTO scenarioDTO = ScenarioDTO.builder()
-                    .prompt(scenario.getPrompt())
-                    .tramHistoire(scenario.getTramHistoire())
-                    .response(scenario.getResponse())
-                    .build();
-            scenarioDTOS.add(scenarioDTO);
-        });
-        return ResponseEntity.ok(scenarioDTOS);
-    }
+
     @GetMapping("/scenarioList")
     public List<ScenarioByIDAndTitre> getScenarioByTitreAndTramHistoire(){
         List<Scenario> scenarios = scenarioService.findAll();
@@ -139,12 +127,6 @@ public class ChatManagementController {
     public ResponseEntity<List<PersonnageDTO>> getPersonnages(@RequestParam Long scenarioID) {
         List<PersonnageDTO> personnageDTOS = getPersonnageDTOS(scenarioID);
         return ResponseEntity.ok(personnageDTOS);
-    }
-    @DeleteMapping("/delete_personnage")
-    public ResponseEntity<String> deletePersonnage(@RequestParam Long personnageID) {
-        personnageService.deletePersonnage(personnageID);
-        String message = "Personnage deleted !!!";
-        return ResponseEntity.ok(message);
     }
 
     @DeleteMapping("/delete")

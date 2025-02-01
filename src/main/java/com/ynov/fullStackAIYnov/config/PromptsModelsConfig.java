@@ -16,7 +16,6 @@ public class PromptsModelsConfig {
     private final StringBuilder descriptionForVikings = new StringBuilder();
     private final StringBuilder descriptionForCasaDePapel = new StringBuilder();
 
-    // Constructeur pour injection des dépendances
     public PromptsModelsConfig() {
         descriptionForGOT.append("Plongez dans l'univers épique de Westeros avec 'Game of Thrones'.")
                 .append("Une série pleine d'aventures, de trahisons et de dragons. Parfaite pour les amateurs de fantasy.")
@@ -36,13 +35,13 @@ public class PromptsModelsConfig {
         return args -> {
 
             promptModelService.createPromptModel(promptTitreEtImgUrlPourGOT,
-                    descriptionForGOT.toString(), "go");
+                    descriptionForGOT.toString(), "game-of-thrones1.jpg");
 
             promptModelService.createPromptModel(promptTitreEtImgUrlPourVK,
-                    descriptionForVikings.toString(), "go");
+                    descriptionForVikings.toString(), "viking.jpg");
 
             promptModelService.createPromptModel(promptTitreEtImgUrlPourCP,
-                    descriptionForCasaDePapel.toString(), "go");
+                    descriptionForCasaDePapel.toString(), "a-casa-de-papel.jpg");
         };
     }
 }
