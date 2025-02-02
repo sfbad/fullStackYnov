@@ -123,11 +123,6 @@ public class ChatManagementController {
         scenarioService.deleteById(scenarioID);
         return ResponseEntity.ok("Scenario deleted");
     }
-    @GetMapping("/personnages")
-    public ResponseEntity<List<PersonnageDTO>> getPersonnages(@RequestParam Long scenarioID) {
-        List<PersonnageDTO> personnageDTOS = getPersonnageDTOS(scenarioID);
-        return ResponseEntity.ok(personnageDTOS);
-    }
 
     @DeleteMapping("/delete")
     public ResponseEntity<String> deletePromptModel(@RequestBody PromptIdDTO promptIdDTO) {
