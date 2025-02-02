@@ -41,7 +41,7 @@ public class PromptsModelsConfig {
                     descriptionForVikings.toString(), "viking.jpg");
 
             promptModelService.createPromptModel(promptTitreEtImgUrlPourCP,
-                    descriptionForCasaDePapel.toString(), "a-casa-de-papel.jpg");
+                    descriptionForCasaDePapel.toString(), "la-casa-de-papel.jpg");
         };
     }
 }
